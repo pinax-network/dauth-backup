@@ -15,21 +15,40 @@
 package authenticator
 
 import (
+	"net"
 	"net/http"
 	"strings"
 )
 
 func RealIPFromRequest(r *http.Request) string {
-	xForwardedFor := r.Header.Get("X-Forwarded-For")
-	return RealIP(xForwardedFor)
+
+	var remoteIP string
+
+	if remoteAddr, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
+		if ip := net.ParseIP(remoteAddr); ip != nil {
+			remoteIP = ip.String()
+		}
+	}
+
+	if xff := strings.Trim(r.Header.Get("X-Forwarded-For"), ","); len(xff) > 0 {
+		addrs := strings.Split(xff, ",")
+		lastFwd := addrs[len(addrs)-1]
+		if ip := net.ParseIP(lastFwd); ip != nil {
+			remoteIP = ip.String()
+		}
+	} else if xri := r.Header.Get("X-Real-Ip"); len(xri) > 0 {
+		if ip := net.ParseIP(xri); ip != nil {
+			remoteIP = ip.String()
+		}
+	}
+
+	return remoteIP
 }
 
 func RealIP(forwardIPs string) string {
 	if forwardIPs != "" {
 		addresses := strings.Split(forwardIPs, ",")
-		if len(addresses) >= 2 {
-			return strings.TrimSpace(addresses[len(addresses)-2])
-		}
+		return strings.TrimSpace(addresses[0])
 	}
 
 	return "0.0.0.0"
