@@ -61,15 +61,13 @@ func parseURL(configURL string) (network, jwtKey, jwtSigningAlgorithm string, ip
 
 	jwtSigningAlgorithm = values.Get("jwtSigningAlgorithm")
 	if jwtSigningAlgorithm == "" {
-		err = fmt.Errorf("missing expected jwtSigningAlgorithm query value")
+		err = fmt.Errorf("missing expected jwtSigningAlgorithm")
 		return
 	}
 
 	// parse the ip allow list if we got one
-	ipAllowListFile := values.Get("ipAllowList")
-	if ipAllowListFile == "" {
-		ipAllowList = authenticator.NewIpAllowList()
-	} else {
+	ipAllowList = authenticator.NewIpAllowList()
+	if ipAllowListFile := values.Get("ipAllowList"); ipAllowListFile != "" {
 		ipAllowList, err = authenticator.NewIpAllowListFromFile(ipAllowListFile)
 		if err != nil {
 			return
@@ -124,15 +122,12 @@ func (a *authenticatorPlugin) Check(ctx context.Context, token, ipAddress string
 			}
 
 			hasAllowedNetworkUsage := false
-
 			for _, n := range credentials.Networks {
 				if n.Name == a.network {
 					hasAllowedNetworkUsage = true
 					break
 				}
 			}
-
-			zlog.Debug("has allowed network usage", zap.String("network", a.network), zap.Bool("is allowed", hasAllowedNetworkUsage))
 
 			if !hasAllowedNetworkUsage {
 				return ctx, errors.New("no usage allowed on network " + a.network)
@@ -154,7 +149,7 @@ func (a *authenticatorPlugin) Check(ctx context.Context, token, ipAddress string
 			Rate: rate,
 		}}
 
-		zlog.Info("created ip quota based credentials", zap.Any("credentials", credentials))
+		zlog.Info("created ip based credentials", zap.Any("credentials", credentials))
 	}
 
 	authContext := authenticator.WithCredentials(ctx, credentials)
