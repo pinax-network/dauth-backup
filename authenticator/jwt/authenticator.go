@@ -18,7 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/pinax-network/dtypes/authentication"
 	"github.com/streamingfast/dauth/authenticator"
 	"go.uber.org/zap"
