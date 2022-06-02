@@ -16,6 +16,7 @@ package authenticator
 
 import (
 	"context"
+	"github.com/pinax-network/dtypes/authentication"
 )
 
 type authKeyType int
@@ -23,16 +24,16 @@ type authKeyType int
 const authKey authKeyType = iota
 
 // WithCredentials creates a child context containing in it the `Credentials` object.
-func WithCredentials(ctx context.Context, credentials Credentials) context.Context {
+func WithCredentials(ctx context.Context, credentials authentication.Credentials) context.Context {
 	return context.WithValue(ctx, authKey, credentials)
 }
 
 // GetCredentials extracts `Credentials` object from context if it exists, returning it
 // if present and `nil` if not found.
-func GetCredentials(ctx context.Context) Credentials {
-	credentials, ok := ctx.Value(authKey).(Credentials)
+func GetCredentials(ctx context.Context) authentication.Credentials {
+	credentials, ok := ctx.Value(authKey).(authentication.Credentials)
 	if !ok {
-		return &AnonymousCredentials{}
+		return &authentication.AnonymousCredentials{}
 	}
 
 	return credentials
