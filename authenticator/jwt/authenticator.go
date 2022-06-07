@@ -14,7 +14,7 @@ import (
 
 func init() {
 	// jwtKey can also be injected using the JWT_SIGNING_KEY environment variable
-	// jwt://jwt?network=bsc&ipAllowList=/etc/firehose/ip-whitelist.yml&jwtSigningAlgorithm=HS256&jwtKey=abc123
+	// jwt://jwt?network=bsc&ipAllowList=/etc/firehose/allowlist.yml&jwtSigningAlgorithm=HS256&jwtKey=abc123
 	authenticator.Register("jwt", func(configURL string) (authenticator.Authenticator, error) {
 		network, jwtKey, jwtSigningAlgorithm, ipAllowList, err := parseURL(configURL)
 		if err != nil {
