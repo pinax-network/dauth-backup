@@ -3,7 +3,7 @@ module github.com/streamingfast/dauth
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/kr/pretty v0.2.1 // indirect
-	github.com/pinax-network/dtypes v0.0.0-20220603133335-8b1cfcb0055d
+	github.com/pinax-network/dtypes v0.1.0
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/streamingfast/derr v0.0.0-20210811180100-9138d738bcec
 	github.com/streamingfast/logging v0.0.0-20220304214715-bc750a74b424
@@ -15,5 +15,3 @@ require (
 )
 
 go 1.13
-
-replace github.com/pinax-network/dtypes => /Users/work/GoLand/pinax-dtypes
