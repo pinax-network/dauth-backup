@@ -20,8 +20,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/streamingfast/derr"
 	"github.com/streamingfast/dauth/authenticator"
+	"github.com/streamingfast/derr"
 	"google.golang.org/grpc/codes"
 )
 

@@ -1,34 +1,27 @@
 # StreamingFast Auth Library
 
-[![reference](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](https://pkg.go.dev/github.com/streamingfast/dauth)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+This is a fork of StreamingFast's dauth package, which can be found [here](https://github.com/streamingfast/dauth).
 
-This library is the authentication interface used as part of **[dfuse](https://github.com/streamingfast/streamingfast)**.
+The fork adds a common JWT authenticator that can be used to parse tokens. It allows to specify an IP allowlist 
+supporting single IPs as well as IP ranges and network specific authorization. The token claims can be found in the
+[dtypes](https://github.com/pinax-network/dtypes/blob/main/authentication/jwt_credentials.go) package.
 
+Note that due to some JWT library incompatibilities we removed the GCP plugin from the original package.
 
 ## Usage
 
-See example usage in [dgraphql](https://github.com/streamingfast/dgraphql).
+Use the following url to configure the common-auth-plugin in firehose:
+`jwt://jwt?network=eth&ipAllowList=/etc/firehose/allowlist.yml&jwtSigningAlgorithm=HS256`
 
-The following plugins are provided by this package:
+The JWT key to verify the tokens can either be injected by adding a `jwtKey` query parameter or setting the `JWT_SIGNING_KEY`
+environment variable.
 
-* `null://`
-* `secret://this-is-the-secret-as-the-hostname`
-* `cloud-gcp://projects/your-gcp-project-id/locations/global/keyRings/your-keyring/cryptoKeys/your-key-like-default/cryptoKeyVersions/1?ip_whitelist={127,192.168.1[0-9]}.*`
+The IP allowlist uses a YAML config file with the following format (multiple categories can be specified with different rate limits):
 
-
-## Contributing
-
-**Issues and PR in this repo related strictly to the dauth library.**
-
-Report any protocol-specific issues in their
-[respective repositories](https://github.com/streamingfast/streamingfast#protocols)
-
-**Please first refer to the general
-[dfuse contribution guide](https://github.com/streamingfast/streamingfast/blob/master/CONTRIBUTING.md)**,
-if you wish to contribute to this code base.
-
-
-## License
-
-[Apache 2.0](LICENSE)
+```yaml
+category:
+    rate: 100
+    ips:
+        - 127.0.0.1 # single ip address
+        - 10.0.0.0/8 # ip range
+```
