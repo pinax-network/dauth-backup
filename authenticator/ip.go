@@ -15,6 +15,7 @@
 package authenticator
 
 import (
+	"go.uber.org/zap"
 	"net"
 	"net/http"
 	"strings"
@@ -22,33 +23,32 @@ import (
 
 func RealIPFromRequest(r *http.Request) string {
 
-	var remoteIP string
+	// In case of a proxy X-Real-Ip should be set to the actual clients ip address, so this takes precedence
+	if xri := r.Header.Get("X-Real-Ip"); len(xri) > 0 {
+		if ip := net.ParseIP(xri); ip != nil {
+			return ip.String()
+		}
+	}
 
+	// otherwise we'll try to extract the client ip from the X-Forwarded-For header
+	if xff := strings.Trim(r.Header.Get("X-Forwarded-For"), ","); len(xff) > 0 {
+		zlog.Info("xff", zap.String("xff", xff))
+		clientIp := strings.Split(xff, ",")[0]
+		if ip := net.ParseIP(clientIp); ip != nil {
+			return ip.String()
+		}
+	}
+
+	// if neither header is available we probably don't have a proxy in between, so we use the remote address from the request
+	if ip := net.ParseIP(r.RemoteAddr); ip != nil {
+		return ip.String()
+	}
+
+	// RemoteAddr might include the port so try this if the attempt to parse the ip failed
 	if remoteAddr, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
 		if ip := net.ParseIP(remoteAddr); ip != nil {
-			remoteIP = ip.String()
+			return ip.String()
 		}
-	}
-
-	if xff := strings.Trim(r.Header.Get("X-Forwarded-For"), ","); len(xff) > 0 {
-		addrs := strings.Split(xff, ",")
-		lastFwd := addrs[len(addrs)-1]
-		if ip := net.ParseIP(lastFwd); ip != nil {
-			remoteIP = ip.String()
-		}
-	} else if xri := r.Header.Get("X-Real-Ip"); len(xri) > 0 {
-		if ip := net.ParseIP(xri); ip != nil {
-			remoteIP = ip.String()
-		}
-	}
-
-	return remoteIP
-}
-
-func RealIP(forwardIPs string) string {
-	if forwardIPs != "" {
-		addresses := strings.Split(forwardIPs, ",")
-		return strings.TrimSpace(addresses[0])
 	}
 
 	return "0.0.0.0"
