@@ -15,7 +15,6 @@
 package authenticator
 
 import (
-	"go.uber.org/zap"
 	"net"
 	"net/http"
 	"strings"
@@ -32,7 +31,6 @@ func RealIPFromRequest(r *http.Request) string {
 
 	// otherwise we'll try to extract the client ip from the X-Forwarded-For header
 	if xff := strings.Trim(r.Header.Get("X-Forwarded-For"), ","); len(xff) > 0 {
-		zlog.Info("xff", zap.String("xff", xff))
 		clientIp := strings.Split(xff, ",")[0]
 		if ip := net.ParseIP(clientIp); ip != nil {
 			return ip.String()
