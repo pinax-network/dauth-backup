@@ -84,7 +84,8 @@ func (middleware *AuthMiddleware) Handler(next http.Handler) http.Handler {
 }
 
 // fromQueryOrHeader first looks for a token in the HTTP header "Authorization".
-//                   if not found, it will look for a query string "token"
+//
+//	if not found, it will look for a query string "token"
 func fromQueryOrHeader(r *http.Request) string {
 	headerToken, err := fromAuthHeader(r)
 	if err != nil || headerToken == "" {

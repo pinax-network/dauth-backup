@@ -22,13 +22,13 @@ import (
 
 //go:generate go-enum --noprefix -f=$GOFILE --marshal --names
 
-//
 // ENUM(
-//   AuthTokenRequired
-//   AuthTokenOptional
-//   AuthTokenDisabled
-// )
 //
+//	AuthTokenRequired
+//	AuthTokenOptional
+//	AuthTokenDisabled
+//
+// )
 type AuthTokenRequirement uint
 
 type Authenticator interface {
