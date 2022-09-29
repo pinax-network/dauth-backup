@@ -18,10 +18,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/golang-jwt/jwt/v4"
 	"net/url"
 	"strings"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gobwas/glob"
 	gcpjwt "github.com/someone1/gcp-jwt-go"
 	"github.com/streamingfast/dauth/authenticator"
