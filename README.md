@@ -6,8 +6,6 @@ The fork adds a common JWT authenticator that can be used to parse tokens. It al
 supporting single IPs as well as IP ranges and network specific authorization. The token claims can be found in the
 [dtypes](https://github.com/pinax-network/dtypes/blob/main/authentication/jwt_credentials.go) package.
 
-Note that due to some JWT library incompatibilities we removed the GCP plugin from the original package.
-
 ## Usage
 
 Use the following url to configure the common-auth-plugin in firehose:
