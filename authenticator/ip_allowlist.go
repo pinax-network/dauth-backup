@@ -68,6 +68,11 @@ func NewIpAllowListFromFile(path string) (*IpAllowList, error) {
 
 func (w *IpAllowList) GetRate(ipString string) (int, error) {
 
+	// we need to remove the brackets for ipv6 addresses as net.ParseIP() won't accept them as part of the ip address
+	// this will break addresses including a port, but we should not get them here any ways
+	ipString = strings.ReplaceAll(ipString, "[", "")
+	ipString = strings.ReplaceAll(ipString, "]", "")
+
 	ip := net.ParseIP(ipString)
 
 	if ip == nil {
