@@ -14,26 +14,34 @@
 
 package authenticator
 
-import (
-	"context"
-)
+import "go.uber.org/zap"
 
-type authKeyType int
-
-const authKey authKeyType = iota
-
-// WithCredentials creates a child context containing in it the `Credentials` object.
-func WithCredentials(ctx context.Context, credentials Credentials) context.Context {
-	return context.WithValue(ctx, authKey, credentials)
+type Credentials interface {
+	GetLogFields() []zap.Field
+	GetUserID() string
 }
 
-// GetCredentials extracts `Credentials` object from context if it exists, returning it
-// if present and `nil` if not found.
-func GetCredentials(ctx context.Context) Credentials {
-	credentials, ok := ctx.Value(authKey).(Credentials)
-	if !ok {
-		return newAnonymousCredentials()
-	}
+type AnonymousCredentials struct {
+	// MUST implement Credentials
+	userID string
+	ip string
+}
 
-	return credentials
+func newAnonymousCredentials() *AnonymousCredentials {
+	return &AnonymousCredentials{
+		userID: "anonymous",
+		ip: "0.0.0.0",
+	}
+}
+
+func (c *AnonymousCredentials) GetUserID() string {
+	return c.userID
+}
+
+func (c *AnonymousCredentials) GetLogFields() []zap.Field {
+	return []zap.Field{
+		zap.String("subject", c.userID),
+		zap.String("api_key_id", c.userID),
+		zap.String("ip", c.ip),
+	}
 }

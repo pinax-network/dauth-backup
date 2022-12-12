@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/pinax-network/dtypes/authentication"
 	"github.com/streamingfast/dauth/authenticator"
 	"go.uber.org/zap"
 	"net/url"
@@ -92,7 +91,7 @@ func (a *authenticatorPlugin) GetAuthTokenRequirement() authenticator.AuthTokenR
 
 func (a *authenticatorPlugin) Check(ctx context.Context, token, ipAddress string) (context.Context, error) {
 
-	credentials := &authentication.JwtCredentials{}
+	credentials := &JwtCredentials{}
 	credentials.IP = ipAddress
 
 	// if we have a token, try to get the credentials from it. A given token must always be valid
@@ -131,7 +130,7 @@ func (a *authenticatorPlugin) Check(ctx context.Context, token, ipAddress string
 			return nil, err
 		}
 
-		credentials.Networks = []authentication.NetworkPermissionClaim{{
+		credentials.Networks = []NetworkPermissionClaim{{
 			Name: a.network,
 			Rate: rate,
 		}}
